@@ -10,11 +10,19 @@ from apps import db
 @blueprint.route('/customers', methods=['GET', 'POST'])
 @login_required
 def index():
+    # Get the search query from the form (POST request)
     if request.method == 'POST':
         search_query = request.form.get('search', '').lower()
         return redirect(url_for('home_blueprint.index', search=search_query))
-
+    
+    # Get the search query from the URL parameters (GET request)
     search_query = request.args.get('search', '').lower()
+
+    # Get the current page number from the URL parameters, default to page 1
+    page = request.args.get('page', 1, type=int)
+
+    # Set the maximum number of customers per page
+    per_page = 30
 
     # Filter customers based on the search query
     if search_query:
@@ -23,19 +31,18 @@ def index():
                 Customer.customer_id.ilike(f'%{search_query}%'),
                 Customer.full_name.ilike(f'%{search_query}%')
             )
-        ).all()
+        ).paginate(page=page, per_page=per_page, error_out=False)
     else:
-        customers = Customer.query.all()
+        customers = Customer.query.paginate(page=page, per_page=per_page, error_out=False)
 
-    # Fetch credit scores for the filtered customers
-    customer_ids = [customer.customer_id for customer in customers]
+    # Fetch credit scores for the current page of customers
+    customer_ids = [customer.customer_id for customer in customers.items]
     credit_scores = CreditScore.query.filter(CreditScore.customer_id.in_(customer_ids)).all()
 
     # Create a dictionary mapping customer_id to credit_score
     credit_scores_dict = {score.customer_id: score.credit_score for score in credit_scores}
 
     return render_template('customers/index.html', customers=customers, credit_score=credit_scores_dict, segment='index')
-
 
 @blueprint.route('/customers/<int:customer_id>')
 @login_required

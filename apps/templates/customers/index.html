@@ -38,7 +38,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for customer in customers %}
+                {% for customer in customers.items %}
                 <tr>
                   <td
                     class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
@@ -75,6 +75,97 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <!-- Pagination controls -->
+        <div class="d-flex justify-content-center">
+          <ul class="pagination">
+            <!-- Previous page button -->
+            {% if customers.has_prev %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                style="border: 0; font-size: 14px"
+                href="{{ url_for('home_blueprint.index', page=customers.prev_num) }}"
+              >
+                <
+              </a>
+            </li>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('home_blueprint.index', page=1) }}"
+              >
+                1
+              </a>
+            </li>
+            <li
+              style="
+                margin-top: 6px;
+                margin-inline-start: 3px;
+                margin-inline-end: 5px;
+              "
+            >
+              ..
+            </li>
+            {% if customers.prev_num != 1 %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('home_blueprint.index', page=customers.prev_num) }}"
+              >
+                {{customers.prev_num}}
+              </a>
+            </li>
+            {% endif %} {% endif %}
+
+            <!-- Page number -->
+            <li class="page-item disabled">
+              <span class="page-link bg-gradient-primary text-white"
+                >{{ customers.page }}</span
+              >
+            </li>
+
+            <!-- Next page button -->
+            {% if customers.has_next %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('home_blueprint.index', page=customers.next_num) }}"
+              >
+                {{customers.next_num}}
+              </a>
+            </li>
+            <li
+              style="
+                margin-top: 6px;
+                margin-inline-start: 3px;
+                margin-inline-end: 5px;
+              "
+            >
+              ..
+            </li>
+            {% if customers.next_num != customers.pages %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('home_blueprint.index', page=customers.pages) }}"
+              >
+                {{customers.pages}}
+              </a>
+            </li>
+            {% endif %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                style="border: 0; font-size: 14px"
+                href="{{ url_for('home_blueprint.index', page=customers.next_num) }}"
+              >
+                >
+              </a>
+            </li>
+            {% endif %}
+          </ul>
         </div>
       </div>
     </div>
