@@ -49,7 +49,10 @@ class CustomerLoan(db.Model):
     secondary_purpose_description = db.Column(db.String(255), nullable=True)
     tertiary_purpose_code = db.Column(db.String(50), nullable=True)
     tertiary_purpose_description = db.Column(db.String(255), nullable=True)
-
+    product_type_biznes_kredileri = db.Column(db.String(10), nullable=True)
+    product_type_partnyorluq_kredileri = db.Column(db.String(10), nullable=True)
+    product_type_istehlak = db.Column(db.String(10), nullable=True)
+    product_type_eh_layihələri = db.Column(db.String(10), nullable=True)
 
 class Survey(db.Model):
     __tablename__ = 'surveys'

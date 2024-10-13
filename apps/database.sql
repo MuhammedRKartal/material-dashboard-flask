@@ -1,5 +1,5 @@
 CREATE TABLE customers (
-    customer_id INT PRIMARY KEY,
+    customer_id INT,
     full_name VARCHAR(255),
     place_of_birth VARCHAR(255),
     date_of_birth DATETIME,
@@ -12,12 +12,14 @@ CREATE TABLE customers (
     monthly_income DECIMAL(15,2),
     education_level VARCHAR(100),
     city VARCHAR(100),
-    number_of_loans INT
+    number_of_loans INT,
+    PRIMARY KEY (customer_id)
 );
 
 CREATE TABLE credit_scores (
     customer_id INT,
     credit_score INT,
+    PRIMARY KEY (customer_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
@@ -38,6 +40,10 @@ CREATE TABLE customer_loans (
     secondary_purpose_description VARCHAR(255),
     tertiary_purpose_code VARCHAR(50),
     tertiary_purpose_description VARCHAR(255),
+    product_type_biznes_kredileri VARCHAR(10),
+    product_type_partnyorluq_kredileri VARCHAR(10),
+    product_type_istehlak VARCHAR(10),
+    product_type_eh_layihələri VARCHAR(10),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
@@ -72,7 +78,7 @@ CREATE TABLE surveys (
     loan_branch VARCHAR(100),
     number_of_loans INT,
     loan_month VARCHAR(50),
-    primary_income_percentage varchar(20),
+    primary_income_percentage VARCHAR(20),
     income_type VARCHAR(100),
     expense_to_income_ratio FLOAT,
     negative_comment_from_loan_department VARCHAR(10),
@@ -86,5 +92,6 @@ CREATE TABLE surveys (
     is_customer_on_banned_list VARCHAR(10),
     is_regular_customer VARCHAR(10),
     total_score INT,
+    PRIMARY KEY (customer_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
