@@ -1,0 +1,51 @@
+.customer-details-table {
+  > :not(caption) > * > * {
+    padding: 0.4rem 1.5rem !important;
+  }
+}
+
+.customer-financial-table,
+.customer-information-table {
+  > tbody {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.customer-financial-table,
+.customer-scores-table,
+.customer-information-table {
+  > tbody > tr {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1600px) {
+  .customer-information-table {
+    > tbody {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .customer-financial-table {
+    > tbody {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .customer-scores-table,
+  .customer-financial-table,
+  .customer-information-table {
+    > tbody > tr {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+    }
+  }
+}

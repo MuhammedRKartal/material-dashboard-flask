@@ -1,28 +1,41 @@
-// Social Buttons
+// Updated Social Buttons with color.adjust()
 
-$facebook:              #3b5998 !default;
-$facebook-states:       darken($facebook, 5%) !default;
-$twitter:               #55acee !default;
-$twitter-states:        darken($twitter, 5%) !default;
-$instagram:             #125688 !default;
-$instagram-states:      darken($instagram, 6%) !default;
-$linkedin:              #0077B5 !default;
-$linkedin-states:       darken($linkedin, 5%) !default;
-$pinterest:             #cc2127 !default;
-$pinterest-states:      darken($pinterest, 6%) !default;
-$youtube:               #e52d27 !default;
-$youtube-states:        darken($youtube, 6%) !default;
-$dribbble:              #ea4c89 !default;
-$dribbble-states:       darken($dribbble, 6%) !default;
-$github:                #24292E !default;
-$github-states:         darken($github, 6%) !default;
-$reddit:                #ff4500 !default;
-$reddit-states:         darken($reddit, 6%) !default;
-$tumblr:                #35465c !default;
-$tumblr-states:         darken($tumblr, 6%) !default;
-$behance:               #1769ff !default;
-$behance-states:        darken($behance, 6%) !default;
-$vimeo:                 #1AB7EA !default;
-$vimeo-states:          darken($vimeo, 6%) !default;
-$slack:                 #3aaf85 !default;
-$slack-states:          darken($slack, 6%) !default;
+$facebook: #1877f2 !default;
+$facebook-states: color.adjust($facebook, $lightness: -5%) !default;
+
+$twitter: #1da1f2 !default;
+$twitter-states: color.adjust($twitter, $lightness: -5%) !default;
+
+$instagram: #e4405f !default;
+$instagram-states: color.adjust($instagram, $lightness: -6%) !default;
+
+$linkedin: #0a66c2 !default;
+$linkedin-states: color.adjust($linkedin, $lightness: -5%) !default;
+
+$pinterest: #e60023 !default;
+$pinterest-states: color.adjust($pinterest, $lightness: -6%) !default;
+
+$youtube: #ff0000 !default;
+$youtube-states: color.adjust($youtube, $lightness: -6%) !default;
+
+$dribbble: #ea4c89 !default;
+$dribbble-states: color.adjust($dribbble, $lightness: -6%) !default;
+
+$github: #24292e !default;
+$github-states: color.adjust($github, $lightness: -6%) !default;
+
+$reddit: #ff4500 !default;
+$reddit-states: color.adjust($reddit, $lightness: -6%) !default;
+
+$tumblr: #35465c !default;
+$tumblr-states: color.adjust($tumblr, $lightness: -6%) !default;
+
+$behance: #1769ff !default;
+$behance-states: color.adjust($behance, $lightness: -6%) !default;
+
+$vimeo: #1ab7ea !default;
+$vimeo-states: color.adjust($vimeo, $lightness: -6%) !default;
+
+$slack: #3aaf85 !default;
+$slack-states: color.adjust($slack, $lightness: -6%) !default;
+

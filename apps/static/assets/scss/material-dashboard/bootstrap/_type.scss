@@ -25,7 +25,6 @@
   @extend h6;
 }
 
-
 .lead {
   @include font-size($lead-font-size);
   font-weight: $lead-font-weight;
@@ -34,9 +33,9 @@
 // Type display classes
 @each $display, $font-size in $display-font-sizes {
   .display-#{$display} {
-    @include font-size($font-size);
     font-weight: $display-font-weight;
     line-height: $display-line-height;
+    @include font-size($font-size);
   }
 }
 
@@ -71,7 +70,6 @@
   }
 }
 
-
 //
 // Misc
 //
@@ -102,3 +100,4 @@
     content: "\2014\00A0"; // em dash, nbsp
   }
 }
+
