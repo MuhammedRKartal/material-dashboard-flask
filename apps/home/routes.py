@@ -5,10 +5,11 @@ from apps.home import blueprint
 from flask import redirect, render_template, request, url_for, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from apps.home.models import Customer, CustomerLoan, CreditScore, Survey
+from apps.home.models import Customer, CustomerLoan, CreditScore, Survey, ModelData
 from apps import db
 
 @blueprint.route('/customers', methods=['GET', 'POST'])
+@login_required
 def index():
     # Get the search query from the form (POST request)
     if request.method == 'POST':
@@ -24,16 +25,21 @@ def index():
     # Set the maximum number of customers per page
     per_page = 30
 
+    # Base query: filter customers by search query, then join with model_data table
+    base_query = Customer.query.join(
+        ModelData, Customer.customer_id == ModelData.Customer_ID
+    )
+
     # Filter customers based on the search query
     if search_query:
-        customers = Customer.query.filter(
+        customers = base_query.filter(
             db.or_(
                 Customer.customer_id.ilike(f'%{search_query}%'),
                 Customer.full_name.ilike(f'%{search_query}%')
             )
         ).paginate(page=page, per_page=per_page, error_out=False)
     else:
-        customers = Customer.query.paginate(page=page, per_page=per_page, error_out=False)
+        customers = base_query.paginate(page=page, per_page=per_page, error_out=False)
 
     # Fetch credit scores for the current page of customers
     customer_ids = [customer.customer_id for customer in customers.items]
@@ -44,7 +50,9 @@ def index():
 
     return render_template('customers/index.html', customers=customers, credit_score=credit_scores_dict, segment='index')
 
+
 @blueprint.route('/customers/<int:customer_id>')
+@login_required
 def customer_profile(customer_id):
     # Query the database to find the customer and their financial information
     customer = Customer.query.get_or_404(customer_id)
@@ -52,79 +60,81 @@ def customer_profile(customer_id):
     customer_loan = CustomerLoan.query.filter_by(customer_id=customer.customer_id).first()
     credit_score = CreditScore.query.filter_by(customer_id=customer.customer_id).first()
 
+    model_data = ModelData.query.get_or_404(customer_id)
+
     data = {
-        "Number_of_Children": 1.0,
-        "Monthly_Income": 4000.0,
-        "Number_of_Loans": 1,
-        "Full_Name_Fərdi - Fiziki şəxs - Rezident": True,
-        "Full_Name_Fərdi - Sahibkar - Rezident": False,
-        "Place_of_Birth_QIRĞIZISTAN": False,
-        "Place_of_Birth_RUSİYA FEDERASİYASI": False,
-        "Place_of_Birth_TACİKİSTAN": False,
-        "Place_of_Birth_TATARISTAN": False,
-        "Place_of_Birth_TÜRKMƏNİSTAN": False,
-        "Place_of_Birth_ÖZBƏKİSTAN": True,
-        "Place_of_Birth_ƏFQANİSTAN": False,
-        "Age": 49.0,
-        "Citizenship_TACİKİSTAN": True,
-        "Gender_QADIN": True,
-        "Marital_Status_DUL": False,
-        "Marital_Status_EVLI": True,
-        "Marital_Status_SUBAY": False,
-        "Occupation_HAYVANCILIK": False,
-        "Occupation_HIZMETLER": False,
-        "Occupation_MORTGAGES": False,
-        "Occupation_TARIM": False,
-        "Occupation_TICARET": False,
-        "Occupation_URETIM": False,
-        "Log_Monthly_Income": 8.294049640102028,
-        "Education_Level_Higher Education": True,
-        "Education_Level_Incomplete Secondary Education": False,
-        "Education_Level_Other Education": False,
-        "Education_Level_Secondary Education": False,
-        "Education_Level_Secondary Education with Specialisation": False,
-        "Total_Loan_Amount": 10000.0,
-        "Average_Loan_Amount": 10000.0,
-        "Loan_Amount_Range": 0.0,
-        "Average_Credit_Duration": 548.0,
-        "Total_Credit_Duration": 548,
-        "Product_Type_BİZNES KREDİTLƏRİ": 0,
-        "Product_Type_PARTNYORLUQ KREDİTLƏERİ": 0,
-        "Product_Type_İSTEHLAK": 1,
-        "Product_Type_Ə.H. LAYİHƏLƏRİ": 0,
-        "Total_Debt": 12.3,
-        "Debt_Income_Ratio": 0.0,
-        "Number_of_Family_Members": 4,
-        "Is_Politician_Hayir": True,
-        "Has_Political_Affiliation_Hayir": True,
-        "Account_Purpose_SBER HESAP": False,
-        "Account_Purpose_TASARRUF HESABI": False,
-        "Account_Purpose_ULUSLARARASI PARA TRANSFERI": False,
-        "Account_Purpose_YURTICI HAVALE": False,
-        "Has_Collateral_Hayir": True,
-        "Owns_Valuable_Items_Hayir": True,
-        "Owns_Real_Estate_Hayir": True,
-        "Loan_Purpose_ISLETME SERMAYESI": False,
-        "Loan_Purpose_MULK ALIMI": False,
-        "Loan_Purpose_SABIT VARLIKLAR": False,
-        "Loan_Purpose_TADILAT": False,
-        "Loan_Purpose_TARIM": False,
-        "Income_Type_DIGER": True,
-        "Income_Type_EK IS": False,
-        "Income_Type_HAVALE": False,
-        "Income_Type_KIRA GELIRI": False,
-        "Negative_Comment_from_Loan_Department_Hayir": True,
-        "Job_Position_Diger": False,
-        "Job_Position_Ozel Sektor": False,
-        "Job_Position_Ozel Sektor/Teknik": False,
-        "Job_Position_Sirket Sahibi": True,
-        "Job_Position_Yonetici": False,
-        "Is_Customer_on_Banned_List_Hayir": True,
-        "Is_Regular_Customer_Evet": True,
-        "Annual_Account_Activity_Range_100.000-500.000": False,
-        "Annual_Account_Activity_Range_30.000-100.000": False,
-        "Annual_Account_Activity_Range_500.000-99999999999": False,
-        "Annual_Account_Activity_Range_Diğer": False
+        "Number_of_Children": float(model_data.Number_of_Children),
+        "Monthly_Income": float(model_data.Monthly_Income),
+        "Number_of_Loans": int(model_data.Number_of_Loans),
+        "Full_Name_Fərdi - Fiziki şəxs - Rezident": bool(model_data.Full_Name_Ferdi_Fiziki_Shexs_Rezident),
+        "Full_Name_Fərdi - Sahibkar - Rezident": bool(model_data.Full_Name_Ferdi_Sahibkar_Rezident),
+        "Place_of_Birth_QIRĞIZISTAN": bool(model_data.Place_of_Birth_QIRGIZISTAN),
+        "Place_of_Birth_RUSİYA FEDERASİYASI": bool(model_data.Place_of_Birth_RUSIYA_FEDERASIYASI),
+        "Place_of_Birth_TACİKİSTAN": bool(model_data.Place_of_Birth_TACIKISTAN),
+        "Place_of_Birth_TATARISTAN": bool(model_data.Place_of_Birth_TATARISTAN),
+        "Place_of_Birth_TÜRKMƏNİSTAN": bool(model_data.Place_of_Birth_TURKMENISTAN),
+        "Place_of_Birth_ÖZBƏKİSTAN": bool(model_data.Place_of_Birth_OZBEKISTAN),
+        "Place_of_Birth_ƏFQANİSTAN": bool(model_data.Place_of_Birth_AFGANISTAN),
+        "Age": float(model_data.Age),
+        "Citizenship_TACİKİSTAN": bool(model_data.Citizenship_TACIKISTAN),
+        "Gender_QADIN": bool(model_data.Gender_QADIN),
+        "Marital_Status_DUL": bool(model_data.Marital_Status_DUL),
+        "Marital_Status_EVLI": bool(model_data.Marital_Status_EVLI),
+        "Marital_Status_SUBAY": bool(model_data.Marital_Status_SUBAY),
+        "Occupation_HAYVANCILIK": bool(model_data.Occupation_HAYVANCILIK),
+        "Occupation_HIZMETLER": bool(model_data.Occupation_HIZMETLER),
+        "Occupation_MORTGAGES": bool(model_data.Occupation_MORTGAGES),
+        "Occupation_TARIM": bool(model_data.Occupation_TARIM),
+        "Occupation_TICARET": bool(model_data.Occupation_TICARET),
+        "Occupation_URETIM": bool(model_data.Occupation_URETIM),
+        "Log_Monthly_Income": float(model_data.Log_Monthly_Income),
+        "Education_Level_Higher Education": bool(model_data.Education_Level_Higher_Education),
+        "Education_Level_Incomplete Secondary Education": bool(model_data.Education_Level_Incomplete_Secondary_Education),
+        "Education_Level_Other Education": bool(model_data.Education_Level_Other_Education),
+        "Education_Level_Secondary Education": bool(model_data.Education_Level_Secondary_Education),
+        "Education_Level_Secondary Education with Specialisation": bool(model_data.Education_Level_Secondary_Education_with_Specialisation),
+        "Total_Loan_Amount": float(model_data.Total_Loan_Amount),
+        "Average_Loan_Amount": float(model_data.Average_Loan_Amount),
+        "Loan_Amount_Range": float(model_data.Loan_Amount_Range),
+        "Average_Credit_Duration": float(model_data.Average_Credit_Duration),
+        "Total_Credit_Duration": int(model_data.Total_Credit_Duration),
+        "Product_Type_BİZNES KREDİTLƏRİ": int(model_data.Product_Type_BIZNES_KREDITLERI),
+        "Product_Type_PARTNYORLUQ KREDİTLƏERİ": int(model_data.Product_Type_PARTNYORLUQ_KREDITLERI),
+        "Product_Type_İSTEHLAK": int(model_data.Product_Type_ISTEHLAK),
+        "Product_Type_Ə.H. LAYİHƏLƏRİ": int(model_data.Product_Type_AH_LAYIHELARI),
+        "Total_Debt": float(model_data.Total_Debt),
+        "Debt_Income_Ratio": float(model_data.Debt_Income_Ratio),
+        "Number_of_Family_Members": int(model_data.Number_of_Family_Members),
+        "Is_Politician_Hayir": bool(model_data.Is_Politician_Hayir),
+        "Has_Political_Affiliation_Hayir": bool(model_data.Has_Political_Affiliation_Hayir),
+        "Account_Purpose_SBER HESAP": bool(model_data.Account_Purpose_SBER_HESAP),
+        "Account_Purpose_TASARRUF HESABI": bool(model_data.Account_Purpose_TASARRUF_HESABI),
+        "Account_Purpose_ULUSLARARASI PARA TRANSFERI": bool(model_data.Account_Purpose_ULUSLARARASI_PARA_TRANSFERI),
+        "Account_Purpose_YURTICI HAVALE": bool(model_data.Account_Purpose_YURTICI_HAVALE),
+        "Has_Collateral_Hayir": bool(model_data.Has_Collateral_Hayir),
+        "Owns_Valuable_Items_Hayir": bool(model_data.Owns_Valuable_Items_Hayir),
+        "Owns_Real_Estate_Hayir": bool(model_data.Owns_Real_Estate_Hayir),
+        "Loan_Purpose_ISLETME SERMAYESI": bool(model_data.Loan_Purpose_ISLETME_SERMAYESI),
+        "Loan_Purpose_MULK ALIMI": bool(model_data.Loan_Purpose_MULK_ALIMI),
+        "Loan_Purpose_SABIT VARLIKLAR": bool(model_data.Loan_Purpose_SABIT_VARLIKLAR),
+        "Loan_Purpose_TADILAT": bool(model_data.Loan_Purpose_TADILAT),
+        "Loan_Purpose_TARIM": bool(model_data.Loan_Purpose_TARIM),
+        "Income_Type_DIGER": bool(model_data.Income_Type_DIGER),
+        "Income_Type_EK IS": bool(model_data.Income_Type_EK_IS),
+        "Income_Type_HAVALE": bool(model_data.Income_Type_HAVALE),
+        "Income_Type_KIRA GELIRI": bool(model_data.Income_Type_KIRA_GELIRI),
+        "Negative_Comment_from_Loan_Department_Hayir": bool(model_data.Negative_Comment_from_Loan_Department_Hayir),
+        "Job_Position_Diger": bool(model_data.Job_Position_Diger),
+        "Job_Position_Ozel Sektor": bool(model_data.Job_Position_Ozel_Sektor),
+        "Job_Position_Ozel Sektor/Teknik": bool(model_data.Job_Position_Ozel_Sektor_Teknik),
+        "Job_Position_Sirket Sahibi": bool(model_data.Job_Position_Sirket_Sahibi),
+        "Job_Position_Yonetici": bool(model_data.Job_Position_Yonetici),
+        "Is_Customer_on_Banned_List_Hayir": bool(model_data.Is_Customer_on_Banned_List_Hayir),
+        "Is_Regular_Customer_Evet": bool(model_data.Is_Regular_Customer_Evet),
+        "Annual_Account_Activity_Range_100.000-500.000": bool(model_data.Annual_Account_Activity_Range_100000_500000),
+        "Annual_Account_Activity_Range_30.000-100.000": bool(model_data.Annual_Account_Activity_Range_30000_100000),
+        "Annual_Account_Activity_Range_500.000-99999999999": bool(model_data.Annual_Account_Activity_Range_500000_99999999999),
+        "Annual_Account_Activity_Range_Diğer": bool(model_data.Annual_Account_Activity_Range_Diger)
     }
 
     url = os.getenv('API_ROUTE_MODEL', None)
