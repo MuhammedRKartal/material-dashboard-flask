@@ -9,7 +9,6 @@ from apps.home.models import Customer, CustomerLoan, CreditScore, Survey, ModelD
 from apps import db
 
 @blueprint.route('/customers', methods=['GET', 'POST'])
-@login_required
 def index():
     # Get the search query from the form (POST request)
     if request.method == 'POST':
@@ -52,7 +51,7 @@ def index():
 
 
 @blueprint.route('/customers/<int:customer_id>')
-@login_required
+
 def customer_profile(customer_id):
     # Query the database to find the customer and their financial information
     customer = Customer.query.get_or_404(customer_id)
@@ -155,7 +154,6 @@ def customer_profile(customer_id):
 
 
 @blueprint.route('/<template>')
-@login_required
 def route_template(template):
     try:
         if not template.endswith('.html'):

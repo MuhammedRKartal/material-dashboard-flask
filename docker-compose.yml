@@ -1,7 +1,7 @@
-version: '3.8'
+version: "3.8"
 services:
-  appseed-app:
-    container_name: appseed_app
+  bank-dashboard-app:
+    container_name: bank-dashboard-app
     restart: always
     env_file: .env
     build: .
@@ -11,18 +11,18 @@ services:
   nginx:
     container_name: nginx
     restart: always
-    image: "nginx:latest"
+    image: "nginx:alpine"
     ports:
       - "5085:5085"
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:
       - web_network
-    depends_on: 
-      - appseed-app
+    depends_on:
+      - bank-dashboard-app
 networks:
   db_network:
     driver: bridge
   web_network:
     driver: bridge
- 
+

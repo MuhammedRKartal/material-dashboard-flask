@@ -22702,6 +22702,12 @@ pre[class*=language-] {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  border-bottom-width: 1px;
+}
+.customer-financial-table > tbody > tr > th,
+.customer-scores-table > tbody > tr > th,
+.customer-information-table > tbody > tr > th {
+  border-bottom-width: 0px;
 }
 
 @media (min-width: 768px) and (max-width: 1600px) {
@@ -22721,6 +22727,12 @@ pre[class*=language-] {
     display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
+    border-bottom-width: 1px;
+  }
+  .customer-scores-table > tbody > tr > th,
+  .customer-financial-table > tbody > tr > th,
+  .customer-information-table > tbody > tr > th {
+    border-bottom-width: 0px;
   }
 }
 /*# sourceMappingURL=material-dashboard.css.map */

@@ -19,6 +19,10 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    border-bottom-width: 1px;
+    & > th {
+      border-bottom-width: 0px;
+    }
   }
 }
 
@@ -46,6 +50,10 @@
       display: flex;
       justify-content: space-between;
       flex-wrap: nowrap;
+      border-bottom-width: 1px;
+      & > th {
+        border-bottom-width: 0px;
+      }
     }
   }
 }

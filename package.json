@@ -1,12 +1,12 @@
 {
-  "name": "gaia-customer-dashboard",
+  "name": "customer-dashboard",
   "version": "0.0.1",
-  "description": "GAIA Customer Dashboard",
+  "description": "Customer Dashboard",
   "repository": {
     "type": "git",
     "url": ""
   },
-  "author": "Mindsane - Appseed(Template)",
+  "author": "Mindsane",
   "engines": {
     "node": ">=10.0.0"
   },
