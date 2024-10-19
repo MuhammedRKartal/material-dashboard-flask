@@ -41,19 +41,20 @@
                 {% for customer in customers.items %}
                 <tr>
                   <td
-                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7"
                   >
                     {{ customer.customer_id }}
                   </td>
                   <td
-                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7"
                   >
                     {{ customer.full_name }}
                   </td>
                   <td
-                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7"
                   >
-                    {{ credit_score[customer.customer_id] }}
+                    {{ credit_score[customer.customer_id] if
+                    credit_score[customer.customer_id] else "-" }}
                   </td>
                   <td>
                     <a href="/customers/{{ customer.customer_id }}">

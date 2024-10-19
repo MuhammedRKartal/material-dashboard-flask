@@ -520,7 +520,7 @@
               <tr>
                 <th class="text-xs font-weight-bolder">Model Score</th>
                 <td class="text-secondary text-sm font-weight-bolder opacity-7">
-                  {{ 1-api_response.probability }}
+                  {{ 1-api_response.probability|round(2, 'ceil') }}
                 </td>
               </tr>
             </table>
